@@ -241,6 +241,7 @@ CarMove getCarMoveFromPoints(int point1, int point2)
     return coreGetCarMove(x1, y1, x2, y2, angle1, angle2);
 }
 
+#define MIN_DIS 5
 
 MoveList find_road(int st_x, int st_y, int ed_x, int ed_y)
 {
@@ -248,32 +249,39 @@ MoveList find_road(int st_x, int st_y, int ed_x, int ed_y)
     int s1 = e_ed[be_edge_index - 1], s2 = e_be[ed_edge_index - 1];
     int haveFirstMove = 0, haveLastMove = 0;
     short angle1, angle2;
+    MoveList moveList;
+
     if(getDis(st_x, st_y, points_x[e_be[be_edge_index - 1]- 1], points_y[e_be[be_edge_index - 1] - 1]) < getDis(st_x, st_y, points_x[e_ed[be_edge_index - 1] - 1], points_y[e_ed[be_edge_index - 1] - 1]))
         angle1 = points_angle[e_be[be_edge_index - 1] - 1];
     else angle1 = points_angle[e_ed[be_edge_index - 1] - 1];
     if(getDis(ed_x, ed_y, points_x[e_be[ed_edge_index - 1] - 1], points_y[e_be[ed_edge_index - 1] - 1]) < getDis(ed_x, ed_y, points_x[e_ed[ed_edge_index - 1] - 1], points_y[e_ed[ed_edge_index - 1] - 1]))
         angle2 = points_angle[e_be[ed_edge_index - 1] - 1];
     else angle2 = points_angle[e_ed[ed_edge_index - 1] - 1];
-
-    CarMove firstMove, lastMove;
-    if(getDis(st_x, st_y, points_x[s1 - 1], points_y[s1 - 1]) > 5) {
-        haveFirstMove = 1;
-        firstMove = coreGetCarMove(st_x, st_y, points_x[s1 - 1], points_y[s1 - 1], angle1, points_angle[s1 - 1]);
+    if(be_edge_index == ed_edge_index || getDis(st_x, st_y, ed_x, ed_y) <= MIN_DIS) {
+        CarMove onlyMove = coreGetCarMove(st_x, st_y, ed_x, ed_y, angle1, angle2);
+        moveList = initMoveList(1);
+        moveList.data[0] = onlyMove;
     }
-    if(getDis(ed_x, ed_y, points_x[s2 - 1], points_y[s2 - 1]) > 5) {
-        haveLastMove = 1;
-        lastMove = coreGetCarMove(points_x[s2 - 1], points_y[s2 - 1], ed_x, ed_y, points_angle[s2 - 1], angle2);
-    }
+    else {
+        CarMove firstMove, lastMove;
+        if (getDis(st_x, st_y, points_x[s1 - 1], points_y[s1 - 1]) > 5) {
+            haveFirstMove = 1;
+            firstMove = coreGetCarMove(st_x, st_y, points_x[s1 - 1], points_y[s1 - 1], angle1, points_angle[s1 - 1]);
+        }
+        if (getDis(ed_x, ed_y, points_x[s2 - 1], points_y[s2 - 1]) > 5) {
+            haveLastMove = 1;
+            lastMove = coreGetCarMove(points_x[s2 - 1], points_y[s2 - 1], ed_x, ed_y, points_angle[s2 - 1], angle2);
+        }
 
-
-    EdgeList edgeList = dijkstra(s1, s2);
-    MoveList moveList = initMoveList(edgeList.num + haveFirstMove + haveLastMove);
-    if(haveFirstMove == 1)
-        moveList.data[0] = firstMove;
-    if(haveLastMove == 1)
-        moveList.data[moveList.num - 1] = lastMove;
-    for(int i = 0; i < edgeList.num; ++i) {
-        moveList.data[i + haveFirstMove] = getCarMoveFromPoints(edgeList.data[i].a, edgeList.data[i].b);
+        EdgeList edgeList = dijkstra(s1, s2);
+        moveList = initMoveList(edgeList.num + haveFirstMove + haveLastMove);
+        if (haveFirstMove == 1)
+            moveList.data[0] = firstMove;
+        if (haveLastMove == 1)
+            moveList.data[moveList.num - 1] = lastMove;
+        for (int i = 0; i < edgeList.num; ++i) {
+            moveList.data[i + haveFirstMove] = getCarMoveFromPoints(edgeList.data[i].a, edgeList.data[i].b);
+        }
     }
     return moveList;
 }
