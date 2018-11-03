@@ -2,6 +2,7 @@
 #include <string.h>
 #include "index_map.h"
 #include "FindRoad.h"
+#include "decodemessage.h"
 
 
 void testDij()
