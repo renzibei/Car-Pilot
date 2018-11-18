@@ -282,6 +282,7 @@ MoveList find_road(int st_x, int st_y, int ed_x, int ed_y)
         for (int i = 0; i < edgeList.num; ++i) {
             moveList.data[i + haveFirstMove] = getCarMoveFromPoints(edgeList.data[i].a, edgeList.data[i].b);
         }
+        deleteEdgeList(&edgeList);
     }
     return moveList;
 }

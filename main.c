@@ -43,11 +43,44 @@ void testFindRoad()
     }while(x1 >= 0);
 }
 
+void testFwrite()
+{
+    CarMove c1;
+    memset(&c1, 0, sizeof(c1));
+    c1.dest_x = 2;
+    c1.dis = 1.23;
+    FILE *test_fp = fopen("./dump.txt", "w");
+    if(test_fp != NULL)
+        fwrite(&c1, 1, sizeof(c1), test_fp);
+    else printf("can not create file");
+}
+
+void testDecodeMessage()
+{
+    MessageInfo msg;
+    CarMove move;
+    while(1) {
+        msg.my_x = 103, msg.my_y = 208;
+        msg.oppo_x = 0, msg.oppo_y = 0;
+        msg.passengerNum = 2;
+        memset(msg.pass_status, 0, 8);
+        msg.xs_pos[0] = 8, msg.ys_pos[0] = 242;
+        msg.xs_pos[1] = 242, msg.ys_pos[1] = 8;
+        msg.xe_pos[0] = 249, msg.ye_pos[0] = 98;
+        msg.xe_pos[1] = 98, msg.ye_pos[1] = 249;
+        move = GetNextMove(msg);
+    }
+
+}
+
+
 
 int main() {
     //FindAllDis();
-    testFindRoad();
+    //testFwrite();
+    //testFindRoad();
     //testDij();
+    testDecodeMessage();
     printf("END\n");
     //printf("Hello, World!\n");
     return 0;
